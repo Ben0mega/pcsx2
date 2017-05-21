@@ -62,7 +62,7 @@ extern bool RunLinuxDialog();
 static GSRenderer* s_gs = NULL;
 static void (*s_irq)() = NULL;
 static uint8* s_basemem = NULL;
-static bool s_vsync = false;
+static int s_vsync = 0;
 static bool s_exclusive = true;
 static const char *s_renderer_name = "";
 static const char *s_renderer_type = "";
@@ -542,7 +542,7 @@ EXPORT_C_(int) GSopen(void** dsp, const char* title, int mt)
 
 	// Legacy GUI expects to acquire vsync from the configuration files.
 
-	s_vsync = !!theApp.GetConfigI("vsync");
+	s_vsync = theApp.GetConfigI("vsync");
 
 	if(mt == 2)
 	{
@@ -964,9 +964,9 @@ EXPORT_C GSsetFrameSkip(int frameskip)
 	s_gs->SetFrameSkip(frameskip);
 }
 
-EXPORT_C GSsetVsync(int enabled)
+EXPORT_C GSsetVsync(int vsync)
 {
-	s_vsync = !!enabled;
+	s_vsync = vsync;
 
 	if(s_gs)
 	{
@@ -1083,7 +1083,7 @@ EXPORT_C GSReplay(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow)
 		uint8 regs[0x2000];
 		GSsetBaseMem(regs);
 
-		s_vsync = theApp.GetConfigB("vsync");
+		s_vsync = theApp.GetConfigI("vsync");
 
 		HWND hWnd = NULL;
 
@@ -1546,7 +1546,7 @@ EXPORT_C GSReplay(char* lpszCmdLine, int renderer)
 
 	GSsetBaseMem(regs);
 
-	s_vsync = theApp.GetConfigB("vsync");
+	s_vsync = theApp.GetConfigI("vsync");
 	int finished = theApp.GetConfigI("linux_replay");
 	bool repack_dump = (finished < 0);
 
