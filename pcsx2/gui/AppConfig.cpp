@@ -847,6 +847,7 @@ AppConfig::GSWindowOptions::GSWindowOptions()
 	WindowPos				= wxDefaultPosition;
 	IsMaximized				= false;
 	IsFullscreen			= false;
+	EnableVsyncWindowFlag	= false;
 
 	IsToggleFullscreenOnDoubleClick = true;
 	IsToggleAspectRatioSwitch = false;
@@ -885,6 +886,7 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 	IniEntry( WindowPos );
 	IniEntry( IsMaximized );
 	IniEntry( IsFullscreen );
+	IniEntry( EnableVsyncWindowFlag );
 
 	IniEntry( IsToggleFullscreenOnDoubleClick );
 	IniEntry( IsToggleAspectRatioSwitch );
