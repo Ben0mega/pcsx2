@@ -71,7 +71,7 @@ int main()
     bool ok = fpu[4] == 0xFFFF;
 
     if (!ok) {
-        printf(\"Wrong MMX state !\n\");
+        printf(\"Wrong MMX state !\");
         exit(1);
     }
 
@@ -100,6 +100,11 @@ function(WX_vs_SDL)
 endfunction()
 
 function(GCC7_BUG)
+    # try_run doesn't work when cross-compiling is enabled. It is completely silly in our case
+    # as i386 binaries are 100% fine on x64.
+    set(OLD_CMAKE_CROSSCOMPILING ${CMAKE_CROSSCOMPILING})
+    set(CMAKE_CROSSCOMPILING 0)
+
     set(IN "${CMAKE_BINARY_DIR}/gcc7_mmx.cpp")
     file(WRITE "${IN}" "${gcc7_mmx_code}")
 
@@ -110,13 +115,14 @@ function(GCC7_BUG)
             compile_result_unused
             "${CMAKE_BINARY_DIR}"
             "${IN}"
-            COMPILE_OUTPUT_VARIABLE OUT
-            CMAKE_FLAGS "-msse -msse2 -O2 -m32"
+            CMAKE_FLAGS "-DCOMPILE_DEFINITIONS:STRING=-msse -msse2 -O2 -m32 -march=i686"
         )
 
     if (${run_result})
         message(FATAL_ERROR "GCC 7.0/7.1  generates invalid code => https://gcc.gnu.org/bugzilla/show_bug.cgi?id=80799\n"
             "You can either backport the fix or swith to another version of GCC.")
     endif()
+
+    set(CMAKE_CROSSCOMPILING ${OLD_CMAKE_CROSSCOMPILING})
 
 endfunction()
